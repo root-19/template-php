@@ -1,0 +1,12 @@
+{
+    "name": "root-19",
+    "project":"tempalte",
+    "description": "Template for projects",
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "scripts": {
+        "run": "php -S localhost:8080 -t public"
+    }
+}

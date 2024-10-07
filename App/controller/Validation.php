@@ -1,7 +1,7 @@
 <?php
 class Validation {
 
-private $conn; 
+private $conn;
 
 public function __construct($conn) {
     $this->conn = $conn;
@@ -9,7 +9,7 @@ public function __construct($conn) {
 
 public function registration($name, $email, $password, $role = 'user') {
     if (empty($name) || empty($email) || empty($password)) {
-        die("Please fill all fields.");
+        throw new Exception("Please fill all fields.");
     }
 
     // Hash the password
@@ -20,7 +20,7 @@ public function registration($name, $email, $password, $role = 'user') {
     $stmt = $this->conn->prepare($sql);
 
     if ($stmt === false) {
-        die("Prepare failed: " . implode(", ", $this->conn->errorInfo()));
+        throw new Exception("Prepare failed: " . implode(", ", $this->conn->errorInfo()));
     }
 
     // Bind parameters
@@ -33,41 +33,35 @@ public function registration($name, $email, $password, $role = 'user') {
     if ($stmt->execute()) {
         return $this->conn->lastInsertId();
     } else {
-        die("Insert failed: " . implode(", ", $stmt->errorInfo()));
+        throw new Exception("Insert failed: " . implode(", ", $stmt->errorInfo()));
     }
 }
 
 public function validateLogin($email, $password) {
-    // Prepare the SQL statement
-    $sql = "SELECT id, name, password, role  FROM users WHERE email = :email";
+    $sql = "SELECT id, name, password, role FROM users WHERE email = :email";
     $stmt = $this->conn->prepare($sql);
 
     if ($stmt === false) {
-        die("Prepare failed: " . implode(", ", $this->conn->errorInfo()));
+        throw new Exception("Prepare failed: " . implode(", ", $this->conn->errorInfo()));
     }
 
-    // Bind email parameter
     $stmt->bindParam(':email', $email);
     $stmt->execute();
 
-    // Check for any errors
     if ($stmt->errorCode() != '00000') {
-        die("Execute failed: " . implode(", ", $stmt->errorInfo()));
+        throw new Exception("Execute failed: " . implode(", ", $stmt->errorInfo()));
     }
 
-    // Fetch the user data
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        // Verify password
         if (password_verify($password, $user['password'])) {
-            return $user; // Return user details if password matches
+            return $user;
         } else {
-            die("Invalid password.");
+            throw new Exception("Invalid password.");
         }
     } else {
-        die("User not found.");
+        throw new Exception("User not found.");
     }
 }
-
 }

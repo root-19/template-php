@@ -1,25 +1,36 @@
 <?php
-class Database {
-	
-	protected $db_name = 'databasename';
-	protected $db_user = 'databaseuser';
-	protected $db_pass = 'databasepassword';
-	protected $db_host = 'databasehost';
-	
-	// Open a connect to the database.
-	// Make sure this is called on every page that needs to use the database.
-	
-	public function connect() {
-	
-		$connect_db = new mysqli( $this->db_host, $this->db_user, $this->db_pass, $this->db_name );
-		
-		if ( mysqli_connect_errno() ) {
-			printf("Connection failed: %s\
-", mysqli_connect_error());
-			exit();
-		}
-		return true;
-		
-	}
+require_once __DIR__ . '../../../vendor'; 
 
+use Dotenv\Dotenv;
+
+class Database {
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
+    public $conn;
+
+    public function __construct() {
+        // Load environment variables from the .env file
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../..'); 
+        $dotenv->load();
+
+        $this->host = $_ENV['DB_HOST'];
+        $this->db_name = $_ENV['DB_NAME'];
+        $this->username = $_ENV['DB_USERNAME'];
+        $this->password = $_ENV['DB_PASSWORD'];
+    }
+
+    public function connect() {
+        $this->conn = null;
+
+        try {
+            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $exception) {
+            echo "Connection error: " . $exception->getMessage();
+        }
+
+        return $this->conn;
+    }
 }
