@@ -21,6 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($user_id) {
                 echo "Registration successful! Please login.";
+                header("location: ../public/Signin.php");
+                exit();
             }
         } catch (Exception $e) {
             echo "Registration failed: " . $e->getMessage();
@@ -38,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['user_role'] = $user['role'];
 
                 if ($user['role'] === 'admin') {
-                    header("Location: ../view/admin/index.php");
+                    header("Location: ../view/admin/admin.php");
                 } else {
                     header("Location: ../view/user/user.php");
                 }

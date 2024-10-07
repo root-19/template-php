@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '../../../vendor'; 
+require_once __DIR__ . '../../../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
@@ -12,9 +12,10 @@ class Database {
 
     public function __construct() {
         // Load environment variables from the .env file
-        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../..'); 
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../..'); // Adjust the path as necessary
         $dotenv->load();
 
+        // Set database connection properties from environment variables
         $this->host = $_ENV['DB_HOST'];
         $this->db_name = $_ENV['DB_NAME'];
         $this->username = $_ENV['DB_USERNAME'];
